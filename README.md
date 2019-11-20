@@ -16,7 +16,7 @@ Term: Fall 2019
 
 **Contribution statement**: 
 
-Cai Ting: 
+Cai Ting: Understood and revised on PMF algorithm part. Edited and merged PMF code together. Wrote the report concerning with the explanation of matrix factorization, pmf and evaluation.
 
 Chen Qichao: Worked on post processing part. Helped with the report of the post processing part.
 
