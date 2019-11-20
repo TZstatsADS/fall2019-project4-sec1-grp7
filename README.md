@@ -15,6 +15,7 @@ Term: Fall 2019
 + Project summary: In this project, we use the rating data from netflix to do matrix factorization in order to recommend movies to different users. The methods we are using in this project are alternating least squares and Gradient Descent with Probabilistic Assumption. We also use kernel ridge regression as our post processing to improve the prediction accuracy.
 
 **Contribution statement**: 
+
 Cai Ting: 
 
 Chen Qichao: Worked on post processing part. Helped with the report of the post processing part.
