@@ -46,12 +46,9 @@ save(res1, file = "../output/A3.Rdata")
 ```{r}
 source("../lib/function.R")
 
-pmf_result <- foreach(i = 1, .combine = rbind ) %dopar% {
-    outSub <-  update_PMF(f = 5, lambdap = 0.001, lambdaq = 0.1,
+pmf_result <-   update_PMF(f = 5, lambdap = 0.001, lambdaq = 0.1,
                       lrate = 0.001, max.iter = 100, stopping.deriv = 0.1,
                       data = data, train = data_train, test = data_test)
-    outSub
-}
 ```
 
 
@@ -104,6 +101,38 @@ pmf_result_summary <- foreach(i = 1:nrow(f_ll), .combine = rbind ) %dopar% {
 )
 
 save(pmf_result_summary, file = "../output/cv.Rdata")
+```
+
+###Iteration plots
+
+```{r}
+load("../output/a2_iteration_df.Rdata")
+load("../output/a3_iteration_df.Rdata")
+
+a2_iteration_df %>% 
+  gather("type", "rmse", train_rmse:test_rmse) %>% 
+  ggplot(aes(x = iteration, y = rmse, color = type)) +
+  geom_line() +
+  #geom_text(aes(x = 83 + 0.05, y = 2, label = "iteration = 83")) + 
+  geom_vline(xintercept = which(a2_iteration_df$test_rmse == min(a2_iteration_df$test_rmse)),
+              col = "black", lty = 2, lwd = 1)+
+  geom_text(x=110, y=2, label="Iteration = 83", col = "black", size=5) + 
+  theme_bw() +
+  scale_color_discrete(name = "Type", labels = c("Test RMSE", "Train RMSE")) +
+  #viridis::scale_fill_viridis(option = "A") +
+  theme(legend.position = "bottom", text = element_text(size=20))
+
+a3_iteration_df %>% 
+  gather("type", "rmse", train_rmse:test_rmse) %>% 
+  ggplot(aes(x = iteration, y = rmse, color = type)) +
+  geom_line() +
+  geom_vline(xintercept = which(a3_iteration_df$test_rmse == min(a3_iteration_df$test_rmse)),
+              col = "black", lty = 2, lwd = 1)+
+  geom_text(x=5, y=0.8, label="Iteration = 1", col = "black" ,size=5) + 
+  theme_bw() +
+  scale_color_discrete(name = "Type", labels = c("Test RMSE", "Train RMSE")) +
+  #viridis::scale_fill_viridis(option = "A") +
+  theme(legend.position = "bottom", text = element_text(size=20))
 ```
 
 ###Postprocessing based on als
@@ -165,3 +194,6 @@ res1$test_RMSE
 A2_result$train_RMSE
 A2_result$test_RMSE
 ```
+
+
+
