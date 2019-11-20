@@ -16,8 +16,11 @@ Term: Fall 2019
 
 **Contribution statement**: 
 Cai Ting: 
+
 Chen Qichao: Worked on post processing part. Helped with the report of the post processing part.
+
 Dong Lulu: Worked on als part and post processing part. Wrote the report concerning with the overview, als and post processing. Helped with debug.
+
 Zhang Kangkang: Generated the work flow of the project. Implemented and evaluated on PMF algorithm and cross validation. Helped debugging other parts. Worked on slides. 
 
 
