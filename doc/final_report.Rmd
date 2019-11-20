@@ -2,7 +2,7 @@
 title: "Project 4"
 author: "Kangkang Zhang,Ting Cai,Lulu Dong,Qichao Chen"
 date: "2019/11/19"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -67,7 +67,7 @@ Because both qi and pj are unknowns, the J function is not convex. However, if w
 source("../lib/function.R")
 for(t in 1:I)
 {ratingmean[t]=mean(data_train[data_train$movieId==as.character(sort(unique(data$movieId),
-                                                                       decreasing = FALSE))[t],]$rating)}
+                                                          decreasing = FALSE))[t],]$rating)}
 res1 <- als(max.iter = 1,feature = 2, lambda = 0.01, data=data,train=data_train, test=data_test)
 save(res1, file = "../output/A3.Rdata")
 ```
@@ -105,13 +105,9 @@ $$p_u = p_u + learning \space rate *(\sum_{r_{u, i} \in S}(r_{u, i} - p^T_u * q_
 $$q_i = q_i + learning \space rate *(\sum_{r_{u, i} \in S}(r_{u, i} - p^T_u * q_i)*p_u - \lambda_u * q_i)$$
 ```{r,eval = FALSE}
 source("../lib/function.R")
-
-pmf_result <- foreach(i = 1, .combine = rbind ) %dopar% {
-    outSub <-  update_PMF(f = 5, lambdap = 0.001, lambdaq = 0.1,
+pmf_result <-  update_PMF(f = 5, lambdap = 0.001, lambdaq = 0.1,
                       lrate = 0.001, max.iter = 100, stopping.deriv = 0.1,
                       data = data, train = data_train, test = data_test)
-    outSub
-}
 ```
 
 
@@ -137,7 +133,7 @@ run_time <- system.time(for(i in 1:nrow(f_l)){
 save(als_result_summary, file = "../output/rmse.Rdata")
 ```
 
-![](../figs/cv_als.jpg){width=600px}
+![](../figs/cv_als.jpg){width=500px}
 
 
 As it is shown in the graph, if we increase the iterations, training RMSE goes down while testing RMSE goes up, which means we are overfitting. So we choose the iteration number as 1. Best parameters in cv is $(f = 2, \lambda = 0.01)$.
@@ -147,8 +143,10 @@ As it is shown in the graph, if we increase the iterations, training RMSE goes d
 ```{r}
 
 f_list <- c(1, 2, 3, 4, 5, rep(5, 6), rep(10, 3), 15, 15, 20, 20)
-lq_list <- c(rep(0.001, 5), 0.010, 0.100, 0.001, 0.010, 0.100, 0.001, 0.001, 0.010, 0.100, 0.010, 0.001, 0.010, 0.001)
-lp_list <- c(rep(0.001, 5), 0.010, 0.100, 0.010, 0.001, 0.001, 0.100, 0.001, 0.010, 0.100, 0.010, 0.001, 0.010, 0.001)
+lq_list <- c(rep(0.001, 5), 0.010, 0.100, 0.001, 
+             0.010, 0.100, 0.001, 0.001, 0.010, 0.100, 0.010, 0.001, 0.010, 0.001)
+lp_list <- c(rep(0.001, 5), 0.010, 0.100, 0.010, 
+             0.001, 0.001, 0.100, 0.001, 0.010, 0.100, 0.010, 0.001, 0.010, 0.001)
 f_ll <- cbind(f_list, lq_list, lp_list)
 
 knitr::kable(f_ll, digit = 3)
@@ -166,7 +164,9 @@ nCores <- detectCores()
 registerDoParallel(nCores) 
 system.time(
 pmf_result_summary <- foreach(i = 1:nrow(f_ll), .combine = rbind ) %dopar% {
-    outSub <-  cv.function(data = data, dat_train = data_train, K = 5, f = f_ll[i,1], lq = f_ll[i,2], lp = f_ll[i,3], max.iter = 20, lrate = 0.001)
+    outSub <-  cv.function(data = data, dat_train = data_train, 
+                           K = 5, f = f_ll[i,1], lq = f_ll[i,2], 
+                           lp = f_ll[i,3], max.iter = 20, lrate = 0.001)
     outSub
 }
 )
@@ -175,7 +175,7 @@ save(pmf_result_summary, file = "../output/cv.Rdata")
 ```
 
 
-![](../figs/cv_pmf.jpg){width=600px}
+![](../figs/cv_pmf.jpg){width=500px}
 
 As it is shown in the graph, for PMF, best iteration number is 83. Best parameters in cv is $(f = 5, \lambda_p = 0.001, \lambda_q = 0.1)$.
 
@@ -195,7 +195,8 @@ load('../output/A3.Rdata')
 
 #A3 rbf kernel ridge regression
 rbf<-rbfdot(sigma=0.05)
-Y_kernel_rbf<-y_hat_kernel(res1[['q']],rbf,lambda=0.01, f=2,data_train = data_train,data_test = data_test)
+Y_kernel_rbf<-y_hat_kernel(res1[['q']],rbf,lambda=0.01, 
+                           f=2,data_train = data_train,data_test = data_test)
 
 #RMSE
 true_train<-data_train[order(data_train$userId),]$rating
@@ -218,7 +219,8 @@ load("../output/a2_result.Rdata")
 
 #A2 rbf kernel ridge regression
 rbf<-rbfdot(sigma=0.05)
-Y_kernel_rbf<-y_hat_kernel(A2_result$q,rbf,lambda=0.01, f=5,data_train = data_train,data_test = data_test)
+Y_kernel_rbf<-y_hat_kernel(A2_result$q,rbf,lambda=0.01, 
+                           f=5,data_train = data_train,data_test = data_test)
 
 #RMSE
 true_train<-data_train[order(data_train$userId),]$rating
@@ -251,7 +253,7 @@ A2_result$train_RMSE
 A2_result$test_RMSE
 ```
 
-#![](../figs/evaluationresult.jpg){width=800px}
+![](../figs/evaluationresult.jpg){width=600px}
 
 From the RMSE table above, we can see the RMSEs for Gradient Descent with Probabilistic Assumption for both train and test are larger than the RMSEs for Alternative Least Squares and the model training time for Gradient Descent with Probabilistic Assumption is very long compared with the model training time for Alternative Least Squares. 
 
