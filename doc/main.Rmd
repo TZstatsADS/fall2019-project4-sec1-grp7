@@ -41,8 +41,6 @@ save(res1, file = "../output/A3.Rdata")
 ```
 
 
-
-
 ### PMF model
 
 ```{r}
@@ -57,46 +55,6 @@ pmf_result <- foreach(i = 1, .combine = rbind ) %dopar% {
 ```
 
 
-
-###Postprocessing based on als
-
-```{r warning=FALSE}
-library(kernlab)
-source("../lib/function.R")
-load('../output/A3.Rdata')
-
-#A3 rbf kernel ridge regression
-rbf<-rbfdot(sigma=0.05)
-Y_kernel_rbf<-y_hat_kernel(res1[['q']],rbf,lambda=0.01, f=2,data_train = data_train,data_test = data_test)
-
-#RMSE
-true_train<-data_train[order(data_train$userId),]$rating
-sqrt(sum((Y_kernel_rbf[[1]][,"rating"] - true_train)^2)/length(true_train)) 
-
-true_test<-data_test[order(data_test$userId),]$rating
-sqrt(sum((Y_kernel_rbf[[2]][,"rating"] - true_test)^2)/length(true_test)) 
-```
-
-
-###Postprocessing based on pmf
-
-```{r warning=FALSE}
-library(kernlab)
-source("../lib/function.R")
-
-load("../output/a2_result.Rdata")
-
-#A2 rbf kernel ridge regression
-rbf<-rbfdot(sigma=0.05)
-Y_kernel_rbf<-y_hat_kernel(A2_result$q,rbf,lambda=0.01, f=5,data_train = data_train,data_test = data_test)
-
-#RMSE
-true_train<-data_train[order(data_train$userId),]$rating
-sqrt(sum((Y_kernel_rbf[[1]][,"rating"] - true_train)^2)/length(true_train)) 
-
-true_test<-data_test[order(data_test$userId),]$rating
-sqrt(sum((Y_kernel_rbf[[2]][,"rating"] - true_test)^2)/length(true_test)) 
-```
 
 ### CV for tune parameter, do not run!
 
@@ -148,6 +106,47 @@ pmf_result_summary <- foreach(i = 1:nrow(f_ll), .combine = rbind ) %dopar% {
 save(pmf_result_summary, file = "../output/cv.Rdata")
 ```
 
+###Postprocessing based on als
+
+```{r warning=FALSE}
+library(kernlab)
+source("../lib/function.R")
+load('../output/A3.Rdata')
+
+#A3 rbf kernel ridge regression
+rbf<-rbfdot(sigma=0.05)
+Y_kernel_rbf<-y_hat_kernel(res1[['q']],rbf,lambda=0.01, f=2,data_train = data_train,data_test = data_test)
+
+#RMSE
+true_train<-data_train[order(data_train$userId),]$rating
+sqrt(sum((Y_kernel_rbf[[1]][,"rating"] - true_train)^2)/length(true_train)) 
+
+true_test<-data_test[order(data_test$userId),]$rating
+sqrt(sum((Y_kernel_rbf[[2]][,"rating"] - true_test)^2)/length(true_test)) 
+```
+
+
+###Postprocessing based on pmf
+
+```{r warning=FALSE}
+library(kernlab)
+source("../lib/function.R")
+
+load("../output/a2_result.Rdata")
+
+#A2 rbf kernel ridge regression
+rbf<-rbfdot(sigma=0.05)
+Y_kernel_rbf<-y_hat_kernel(A2_result$q,rbf,lambda=0.01, f=5,data_train = data_train,data_test = data_test)
+
+#RMSE
+true_train<-data_train[order(data_train$userId),]$rating
+sqrt(sum((Y_kernel_rbf[[1]][,"rating"] - true_train)^2)/length(true_train)) 
+
+true_test<-data_test[order(data_test$userId),]$rating
+sqrt(sum((Y_kernel_rbf[[2]][,"rating"] - true_test)^2)/length(true_test)) 
+```
+
+
 ###Evaluation
 ```{r}
 t1 <- system.time(als(max.iter = 1,feature = 2, lambda = 0.01, data=data,train=data_train, test=data_test))
@@ -157,9 +156,10 @@ t2 <- system.time(foreach(i = 1, .combine = rbind ) %dopar% {
                       data = data, train = data_train, test = data_test)
     outSub
 })
-
+#system time
 t1
 t2
+#RMSE
 res1$train_RMSE
 res1$test_RMSE
 A2_result$train_RMSE
